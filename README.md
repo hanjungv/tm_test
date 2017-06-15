@@ -1,24 +1,11 @@
-# README
+## 있어야 하는 기능
+* 이름으로 로그인
+* 시간 GMT기준으로 추가 제거
+<img src = 'login.gif'/>
+* 일정 중복되지 않게 생성, 업데이트, 제거
+<img src = 'cude.gif'/>
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
-
-Things you may want to cover:
-
-* Ruby version
-
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+### 추가적으로 사용한 라이브러리
+* moment.js : [https://momentjs.com/](https://momentjs.com/)
+* Bootstrap : [http://getbootstrap.com/](http://getbootstrap.com/)
+* jQuery
