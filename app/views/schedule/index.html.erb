@@ -1,0 +1,149 @@
+<div class="container">
+  <div class="row main">
+    <div class="panel-heading">
+      <div class="panel-title text-center">
+        <h1 class="title" id = 'userNameShow'></h1>
+        <hr />
+      </div>
+    </div>
+    <div class = "clock" id = "clock">
+      <div class = "clock0" id = "clock0"></div>
+    </div>
+    <div class = "pd10 txt-center">
+      <select name="standardTime" id="standardTime" class="form-control selectForm">
+        <option value="-11">GTM-11</option>
+        <option value="-10">GTM-10</option>
+        <option value="-9">GTM-9</option>
+        <option value="-8">GTM-8</option>
+        <option value="-7">GTM-7</option>
+        <option value="-6">GTM-6</option>
+        <option value="-5">GTM-5</option>
+        <option value="-4">GTM-4</option>
+        <option value="-3">GTM-3</option>
+        <option value="-2">GTM-2</option>
+        <option value="-1">GTM-1</option>
+        <option value="0">GTM+0</option>
+        <option value="1">GTM+1</option>
+        <option value="2">GTM+2</option>
+        <option value="3">GTM+3</option>
+        <option value="4">GTM+4</option>
+        <option value="5">GTM+5</option>
+        <option value="6">GTM+6</option>
+        <option value="7">GTM+7</option>
+        <option value="8">GTM+8</option>
+        <option value="9">GTM+9</option>
+        <option value="10">GTM+10</option>
+        <option value="11">GTM+11</option>
+        <option value="12">GTM+12</option>
+        <option value="13">GTM+13</option>
+      </select>
+      <button class = "btn btn-default" id = "createClockBtn">+</button>
+    </div>
+    <div class="main-bg main-list">
+      <div class = "scheduleList" id = "scheduleList">
+        <table class="table" >
+          <thead>
+            <tr>
+              <th>스케줄이름</th>
+              <th>작성자</th>
+              <th>시작시간</th>
+              <th>끝 시간</th>
+              <th>변경/삭제</th>
+            </tr>
+          </thead>
+          <tbody id = "scheduleTableBody">
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class = "pdTop10">
+      <button class = "btn btn-primary" id = "createScheduleBtn">일정추가</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let stdTime = [9];
+function eraseClock(id){
+  stdTime[id] = -999;
+}
+function userValidCheck(id){
+  let userName = localStorage.getItem("userName");
+  let writerObj = JSON.parse(localStorage.getItem("schedule"+id));
+  let writerName = writerObj["userName"];
+  if(userName == writerName){
+    return true;
+  } else{
+    return false;
+  }
+}
+function eraseRow(id) {
+  if(userValidCheck(id)){
+    localStorage.removeItem("schedule"+id);
+    let listCnt = Number(localStorage.getItem("listCnt"));
+    localStorage.setItem('listCnt',listCnt-1);
+    location.reload();
+  } else{
+    alert("작성자만 삭제 할 수 있습니다");
+  }
+}
+function updateRow(id){
+  if(userValidCheck(id)){
+    window.location.href = '/schedule/update/' + id;
+  } else{
+    alert("작성자만 변경 할 수 있습니다");
+  }
+}
+
+$(document).ready(function(){
+    let userName = localStorage.getItem("userName");
+    let listCnt = Number(localStorage.getItem("listCnt"));
+
+    $("#userNameShow").append(userName+"님 반갑습니다!");
+
+    for(let i = 0; i<listCnt; i++){
+      let list = localStorage.getItem("schedule"+i);
+      let scheObj = JSON.parse(list);
+
+      $("#scheduleTableBody").append(`
+         <tr>
+            <td>${scheObj["scheName"]}</td>
+            <td>${scheObj["userName"]}</td>
+            <td>${moment(scheObj["startDate"]*1000).format("YYYY-MM-DD, HH:mm:ss")}</td>
+            <td>${moment(scheObj["finishDate"]*1000).format("YYYY-MM-DD, HH:mm:ss")}</td>
+            <td>
+              <button id = updateRow${i} class = 'btn btn-default' onClick = 'updateRow(${i})'>update</button>
+              <button id = eraseRow${i} class = 'btn btn-default' onClick = 'eraseRow(${i})'>erase</button>
+             </td>
+         </tr>`
+      );
+    }
+
+    function startTime() {
+      let date = moment().format('YYYY-MM-DD, HH:mm:ss');
+      for (let i = 0; i < stdTime.length; i++) {
+        let standardTime = Number(stdTime[i]);
+        if (standardTime == -999) {
+          $("#clock" + i).html("");
+          continue;
+        }
+        $("#clock" + i).html(`
+          ${moment().add(standardTime-9, 'hours').format('H:mm:ss')}
+          <span style = 'font-size:20px;'>(기준: GMT ${standardTime})</span>
+          <button id = 'erase${i}' class = 'btn btn-default' onClick = 'eraseClock(${i})'>erase</button>
+        `);
+      }
+    }
+    setInterval(startTime, 500);
+
+    $("#createClockBtn").click(function(){
+      let gmt = $("#standardTime").val();
+      let len = stdTime.length;
+      $("#clock").append("<div class = 'clock"+len+"' id = 'clock"+len+"'></div>");
+      stdTime.push(gmt);
+    });
+    $("#createScheduleBtn").click(function(){
+      window.location.href = '/schedule/create?userName=' + userName;
+    });
+});
+</script>
