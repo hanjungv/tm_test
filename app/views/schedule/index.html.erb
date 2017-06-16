@@ -64,10 +64,10 @@
 
 <script>
 let stdTime = [9];
-function eraseClock(id){
+let eraseClock = function(id){
   stdTime[id] = -999;
 }
-function userValidCheck(id){
+let userValidCheck =  function(id){
   let userName = localStorage.getItem("userName");
   let writerObj = JSON.parse(localStorage.getItem("schedule"+id));
   let writerName = writerObj["userName"];
@@ -77,7 +77,7 @@ function userValidCheck(id){
     return false;
   }
 }
-function eraseRow(id) {
+let eraseRow = function(id) {
   if(userValidCheck(id)){
     localStorage.removeItem("schedule"+id);
     let listCnt = Number(localStorage.getItem("listCnt"));
@@ -87,14 +87,14 @@ function eraseRow(id) {
     alert("작성자만 삭제 할 수 있습니다");
   }
 }
-function updateRow(id){
+let updateRow = function(id){
   if(userValidCheck(id)){
     window.location.href = '/schedule/update/' + id;
   } else{
     alert("작성자만 변경 할 수 있습니다");
   }
 }
-function startTime() {
+let startTime = function() {
   let date = moment().format('YYYY-MM-DD, HH:mm:ss');
   for (let i = 0; i < stdTime.length; i++) {
     let standardTime = Number(stdTime[i]);
