@@ -43,59 +43,53 @@
   </div>
 </div>
 <script>
-  $(document).ready(function(){
-    $( "#finishDate" ).datepicker({
-      format: 'yyyy/mm/dd'
-    });
-    $( "#startDate" ).datepicker({
-      format: 'yyyy/mm/dd'
-    });
-    $(".Len2").change(function(){
-      if($(this).val().length > 2){
-        alert("시간은 1~24, 분은 0~59 입니다");
-        $(this).val(0);
-      }
-    });
-    $('#submitBtn').click(function(){
-      //validation
-      let listCnt = Number(localStorage.getItem('listCnt'));
-      let userName = localStorage.getItem("userName");
-      let startStr = `${$("#startDate").val()}, ${$("#startHour").val()}:${$("#startMin").val()}:00`;
-      let finishStr = `${$("#finishDate").val()}, ${$("#finishHour").val()}:${$("#finishMin").val()}:00`;
-      let stUnixTime = Date.parse(startStr)/1000;
-      let finUnixTime = Date.parse(finishStr)/1000;
-      if(stUnixTime >= finUnixTime){
-        alert("시간이 잘못되었습니다!");
-      } else if(finUnixTime < Date.now()/1000){
-        alert("현재시간 이전은 예약이 불가능 합니다");
-      } else{
-        //webStorage에 체크
-        let isValid = 1;
-        //안되는 경우를 체크하기 보단 되는 경우를 체크하는 것이 좋겠다!
-        for(let i = 0; i<listCnt; i++){
-          if(i == rowId) continue;  //자기 자신과 비교할 필요는 없다
-          let obj = localStorage.getItem('schedule'+i);
-          let compObj = JSON.parse(obj);
-          let compStDate = compObj["startDate"];
-          let compFinDate = compObj["finishDate"];
-          if((compStDate > stUnixTime && compStDate > finUnixTime)|| (compFinDate < stUnixTime && compFinDate < finUnixTime)){
-              continue;
-          } else{
-            isValid = 0;
-            break;
-          }
-        }
-        if(isValid == 0){
-          alert("이미 그 시간에 예약이 있습니다");
-        } else{
-          let Object = {'scheName': $("#scheName").val(),'userName': userName ,'startDate' : stUnixTime, 'finishDate': finUnixTime};
-          localStorage.setItem('schedule'+listCnt, JSON.stringify(Object));
-          localStorage.setItem('listCnt', listCnt+1);
-
-          window.location.href = '/schedule/index';
-        }
-      }
-      //is okay
-    });
+$(document).ready(function(){
+  $( "#finishDate" ).datepicker({});
+  $( "#startDate" ).datepicker({});
+  // 시간, 분 입력 validation
+  $(".Len2").change(function(){
+    if($(this).val().length > 2){
+      alert("시간은 1~24, 분은 0~59 입니다");
+      $(this).val(0);
+    }
   });
+  $('#submitBtn').click(function(){
+    //validation
+    let listCnt = Number(localStorage.getItem('listCnt'));
+    let userName = localStorage.getItem("userName");
+    let startStr = `${$("#startDate").val()}, ${$("#startHour").val()}:${$("#startMin").val()}:00`;
+    let finishStr = `${$("#finishDate").val()}, ${$("#finishHour").val()}:${$("#finishMin").val()}:00`;
+    let stUnixTime = Date.parse(startStr)/1000;
+    let finUnixTime = Date.parse(finishStr)/1000;
+    if(stUnixTime >= finUnixTime){
+      alert("시간이 잘못되었습니다!");
+    } else if(finUnixTime < Date.now()/1000){
+      alert("현재시간 이전은 예약이 불가능 합니다");
+    } else{
+      //webStorage에 체크
+      let isValid = 1;
+      //안되는 경우를 체크하기 보단 되는 경우를 체크하는 것이 좋겠다!
+      for(let i = 0; i<listCnt; i++){
+        let obj = localStorage.getItem('schedule'+i);
+        let compObj = JSON.parse(obj);
+        let compStDate = compObj["startDate"];
+        let compFinDate = compObj["finishDate"];
+        if((compStDate > stUnixTime && compStDate > finUnixTime)|| (compFinDate < stUnixTime && compFinDate < finUnixTime)){
+            continue;
+        } else{
+          isValid = 0;
+          break;
+        }
+      }
+      if(isValid == 0){
+        alert("이미 그 시간에 예약이 있습니다");
+      } else{
+        let Object = {'scheName': $("#scheName").val(),'userName': userName ,'startDate' : stUnixTime, 'finishDate': finUnixTime};
+        localStorage.setItem('schedule'+listCnt, JSON.stringify(Object));
+        localStorage.setItem('listCnt', listCnt+1);
+        window.location.href = '/schedule/index';
+      }
+    }
+  });
+});
 </script>

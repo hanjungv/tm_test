@@ -94,6 +94,23 @@ function updateRow(id){
     alert("작성자만 변경 할 수 있습니다");
   }
 }
+function startTime() {
+  let date = moment().format('YYYY-MM-DD, HH:mm:ss');
+  for (let i = 0; i < stdTime.length; i++) {
+    let standardTime = Number(stdTime[i]);
+    if (standardTime == -999) {
+      $("#clock" + i).html("");
+      continue;
+    }
+    $("#clock" + i).html(`
+        ${moment().add(standardTime-9, 'hours').format('H:mm:ss')}
+        <span style = 'font-size:20px;'>(기준: GMT ${standardTime})</span>
+        <button id = 'erase${i}' class = 'btn btn-default' onClick = 'eraseClock(${i})'>erase</button>
+      `);
+  }
+}
+setInterval(startTime, 500);
+
 
 $(document).ready(function(){
     let userName = localStorage.getItem("userName");
@@ -106,44 +123,26 @@ $(document).ready(function(){
       let scheObj = JSON.parse(list);
 
       $("#scheduleTableBody").append(`
-         <tr>
-            <td>${scheObj["scheName"]}</td>
-            <td>${scheObj["userName"]}</td>
-            <td>${moment(scheObj["startDate"]*1000).format("YYYY-MM-DD, HH:mm:ss")}</td>
-            <td>${moment(scheObj["finishDate"]*1000).format("YYYY-MM-DD, HH:mm:ss")}</td>
-            <td>
-              <button id = updateRow${i} class = 'btn btn-default' onClick = 'updateRow(${i})'>update</button>
-              <button id = eraseRow${i} class = 'btn btn-default' onClick = 'eraseRow(${i})'>erase</button>
-             </td>
+        <tr>
+          <td>${scheObj["scheName"]}</td>
+          <td>${scheObj["userName"]}</td>
+          <td>${moment(scheObj["startDate"]*1000).format("YYYY-MM-DD, HH:mm:ss")}</td>
+          <td>${moment(scheObj["finishDate"]*1000).format("YYYY-MM-DD, HH:mm:ss")}</td>
+          <td>
+            <button id = updateRow${i} class = 'btn btn-default' onClick = 'updateRow(${i})'>update</button>
+            <button id = eraseRow${i} class = 'btn btn-default' onClick = 'eraseRow(${i})'>erase</button>
+           </td>
          </tr>`
       );
     }
-
-    function startTime() {
-      let date = moment().format('YYYY-MM-DD, HH:mm:ss');
-      for (let i = 0; i < stdTime.length; i++) {
-        let standardTime = Number(stdTime[i]);
-        if (standardTime == -999) {
-          $("#clock" + i).html("");
-          continue;
-        }
-        $("#clock" + i).html(`
-          ${moment().add(standardTime-9, 'hours').format('H:mm:ss')}
-          <span style = 'font-size:20px;'>(기준: GMT ${standardTime})</span>
-          <button id = 'erase${i}' class = 'btn btn-default' onClick = 'eraseClock(${i})'>erase</button>
-        `);
-      }
-    }
-    setInterval(startTime, 500);
-
     $("#createClockBtn").click(function(){
       let gmt = $("#standardTime").val();
       let len = stdTime.length;
-      $("#clock").append("<div class = 'clock"+len+"' id = 'clock"+len+"'></div>");
+      $("#clock").append(`<div class = 'clock${len}' id = 'clock${len}'></div>`);
       stdTime.push(gmt);
     });
     $("#createScheduleBtn").click(function(){
-      window.location.href = '/schedule/create?userName=' + userName;
+      window.location.href = '/schedule/create';
     });
 });
 </script>
